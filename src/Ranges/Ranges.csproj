@@ -1,7 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Evoq</RootNamespace>
+    <AssemblyName>Evoq.Ranges.StandardLib</AssemblyName>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>Evoq.Ranges</PackageId>
+    <Authors>Evoq Limited</Authors>
+    <Company>Evoq Limited</Company>
+    <Product>Evoq.Ranges</Product>
+    <Description>A library containing classes for dealing with ranges of comparable values for common uses across any .NET project.</Description>
+    <Copyright>Copyright © Evoq Limited 2018</Copyright>
+    <PackageTags>temporal, timerange, helpers, date, time, range</PackageTags>
+    <PackageReleaseNotes>Initial .NET Standard 2.0 package.</PackageReleaseNotes>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\Evoq.Ranges.StandardLib.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>
