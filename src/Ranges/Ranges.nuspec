@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Evoq.Ranges</id>
+    <version>1.0.0</version>
+    
+    <title>Evoq Ranges</title>
+    <summary>Contains classes such as Range of T and TimeRange.</summary>
+    <description>A library containing classes for dealing with ranges of comparable values for common uses across any .NET project.</description>
+
+    <authors>Evoq Limited</authors>
+    <owners>Evoq Limited</owners>
+    
+    <projectUrl>https://github.com/lukepuplett/standard-ranges</projectUrl>
+    <licenseUrl>https://github.com/lukepuplett/standard-ranges/blob/master/LICENSE</licenseUrl>    
+        
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes>Initial .NET Standard 2.0 package.</releaseNotes>
+    <copyright>Copyright © Evoq Limited 2018</copyright>
+    <tags>temporal, timerange, helpers, date, time, range</tags>
+    
+  </metadata>
+</package>
