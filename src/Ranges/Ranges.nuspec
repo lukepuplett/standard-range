@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>Evoq.Ranges</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     
     <title>Evoq Ranges</title>
     <summary>Contains classes such as Range of T and TimeRange.</summary>
@@ -20,4 +20,7 @@
     <tags>temporal, timerange, helpers, date, time, range</tags>
     
   </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.0\*.dll" target="lib\netstandard2.0" />
+  </files>
 </package>

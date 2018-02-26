@@ -6,9 +6,7 @@
     <AssemblyName>Evoq.Ranges.StandardLib</AssemblyName>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <NuspecFile>Ranges.nuspec</NuspecFile>
-    <Product>Evoq.Ranges</Product>    
-    <Version>1.0.0</Version>
-
+    <Product>Evoq.Ranges</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
