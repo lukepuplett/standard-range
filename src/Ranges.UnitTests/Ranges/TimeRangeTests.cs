@@ -40,6 +40,20 @@ namespace Evoq.Ranges.UnitTests
         }
 
         [TestMethod]
+        public void TimeRange_Constructor_ThrowsOnWonkyOffsets()
+        {
+            try
+            {
+                var _ = new TimeRange(new DateTimeOffset(new DateTime(2017, 12, 25), TimeSpan.Zero), new DateTimeOffset(new DateTime(2017, 12, 26), TimeSpan.FromHours(1)));
+            }
+            catch (ArgumentException)
+            {
+                Assert.IsTrue(true);
+                return;
+            }
+        }
+
+        [TestMethod]
         public void TimeRange_FromDay_ReturnsValidRange()
         {
             var r = TimeRange.FromDay(PointInTime1);
@@ -55,6 +69,115 @@ namespace Evoq.Ranges.UnitTests
             var r = TimeRange.FromDaysCovered(PointInTime1.Date, 40);
 
             Assert.AreEqual(40 * 24 * 60, r.DurationMins);
+        }
+
+        [TestMethod]
+        public void TimeRange_FromMonth_ReturnsExpectedRange()
+        {
+            var range = TimeRange.FromMonthsCovered(2017, 12, 1);
+
+            Assert.AreEqual(range.Start.Year, 2017);
+            Assert.AreEqual(range.Stop.Year, 2017);
+
+            Assert.AreEqual(range.Start.Month, 12);
+            Assert.AreEqual(range.Stop.Month, 12);
+
+            Assert.AreEqual(range.Start.Day, 1);
+            Assert.AreEqual(range.Stop.Day, 31);
+        }
+
+        [TestMethod]
+        public void TimeRange_FromMonth_ReturnsFalseForIsEnvelopingMidnightTheNextMonth()
+        {
+            var range = TimeRange.FromMonthsCovered(2017, 12, 1);
+
+            Assert.IsFalse(range.IsEnveloping(new DateTimeOffset(new DateTime(2018, 1, 1))));
+        }
+
+        [TestMethod]
+        public void TimeRange_FromDatesCovered_ReturnsExpectedInstance()
+        {
+            var a = new DateTime(2017, 12, 1, 13, 45, 00);
+            var b = new DateTime(2017, 12, 31, 09, 00, 00);
+            //
+            //  Times specified just for test. Expecting only the date information to be retained.
+
+            var range = TimeRange.FromDatesCovered(a, b, TimeSpan.Zero);
+
+            Assert.IsTrue(range.IsIncreasing);
+            Assert.AreEqual(1, range.Start.Day);
+            Assert.AreEqual(31, range.Stop.Day);
+        }
+
+        [TestMethod]
+        public void TimeRange_FromDatesCovered_ReturnsExpectedInstanceWhenDecreasing()
+        {
+            var a = new DateTime(2017, 12, 31, 09, 00, 00);
+            var b = new DateTime(2017, 12, 1, 13, 45, 00);
+            //
+            //  Times specified just for test. Expecting only the date information to be retained.
+
+            var range = TimeRange.FromDatesCovered(a, b, TimeSpan.Zero);
+
+            Assert.IsFalse(range.IsIncreasing);
+            Assert.AreEqual(31, range.Start.Day);
+            Assert.AreEqual(1, range.Stop.Day);
+        }
+
+        [TestMethod]
+        public void TimeRange_FromDatesCovered_ReturnsExpectedInstanceWithExclusiveStop()
+        {
+            var a = new DateTime(2017, 12, 1, 13, 45, 00);
+            var b = new DateTime(2018, 1, 1, 09, 00, 00);
+            //
+            //  Times specified just for test. Expecting only the date information to be retained.
+
+            var range = TimeRange.FromDatesCovered(a, b, TimeSpan.Zero, true);
+
+            Assert.AreEqual(1, range.Start.Day);
+            Assert.AreEqual(31, range.Stop.Day);
+        }
+
+        [TestMethod]
+        public void TimeRange_Last_ReturnsValidRange()
+        {
+            var r = TimeRange.Last(TimeSpan.FromHours(1));
+
+            var elapsed = DateTimeOffset.Now - r.Stop;
+            Assert.IsTrue(elapsed.TotalMilliseconds < 10);
+
+            Assert.AreEqual(1 * 60 * 60 * 1000, r.Duration.TotalMilliseconds);
+            Assert.IsTrue(r.IsIncreasing);
+        }
+
+        [TestMethod]
+        public void TimeRange_Next_ReturnsValidRange()
+        {
+            var r = TimeRange.Next(TimeSpan.FromHours(1));
+
+            var elapsed = DateTimeOffset.Now - r.Start;
+            Assert.IsTrue(elapsed.TotalMilliseconds < 10);
+
+            Assert.AreEqual(1 * 60 * 60 * 1000, r.Duration.TotalMilliseconds);
+            Assert.IsTrue(r.IsIncreasing);
+        }
+
+        [TestMethod]
+        public void TimeRange_Next_DoesntOverlapLast()
+        {
+            var last = TimeRange.Last(TimeSpan.FromHours(1));
+            var next = TimeRange.Next(TimeSpan.FromHours(1));
+
+            Assert.IsFalse(last.IsOverlapping(next));
+        }
+
+        [TestMethod]
+        public void TimeRange_Next_OverlapsLast()
+        {
+            var next = TimeRange.Next(TimeSpan.FromHours(1)); // If we make next first
+            var last = TimeRange.Last(TimeSpan.FromHours(1)); // then last will overlap.
+
+            Assert.IsTrue(last.IsOverlapping(next));
         }
 
         [TestMethod]
@@ -119,7 +242,7 @@ namespace Evoq.Ranges.UnitTests
 
             Assert.AreEqual(2021, s.Start.Year);
         }
-        
+
         [TestMethod]
         public void TimeRange_AsToday_ReturnsRangeStartingTodayOfSameDuration()
         {
@@ -177,7 +300,7 @@ namespace Evoq.Ranges.UnitTests
 
             Assert.IsFalse(r1.SpansMidnight);
         }
-        
+
         [TestMethod]
         public void TimeRange_GetSubdivisions_Returns11MinutesWithin10MinutesInclusive()
         {
@@ -244,87 +367,6 @@ namespace Evoq.Ranges.UnitTests
             var range = TimeRange.FromDay(new DateTime(2017, 12, 25));
 
             Assert.IsTrue(range.IsEnveloping(range.Stop));
-        }
-
-        [TestMethod]
-        public void TimeRange_FromMonth_ReturnsExpectedRange()
-        {
-            var range = TimeRange.FromMonthsCovered(2017, 12, 1);
-
-            Assert.AreEqual(range.Start.Year, 2017);
-            Assert.AreEqual(range.Stop.Year, 2017);
-
-            Assert.AreEqual(range.Start.Month, 12);
-            Assert.AreEqual(range.Stop.Month, 12);
-
-            Assert.AreEqual(range.Start.Day, 1);
-            Assert.AreEqual(range.Stop.Day, 31);
-        }
-
-        [TestMethod]
-        public void TimeRange_FromMonth_ReturnsFalseForIsEnvelopingMidnightTheNextMonth()
-        {
-            var range = TimeRange.FromMonthsCovered(2017, 12, 1);
-
-            Assert.IsFalse(range.IsEnveloping(new DateTimeOffset(new DateTime(2018, 1, 1))));
-        }
-
-        [TestMethod]
-        public void TimeRange_ctor_ThrowsOnWonkyOffsets()
-        {
-            try
-            {
-                var _ = new TimeRange(new DateTimeOffset(new DateTime(2017, 12, 25), TimeSpan.Zero), new DateTimeOffset(new DateTime(2017, 12, 26), TimeSpan.FromHours(1)));
-            }
-            catch (ArgumentException)
-            {
-                Assert.IsTrue(true);
-                return;
-            }
-        }    
-        
-        [TestMethod]
-        public void TimeRange_FromDatesCovered_ReturnsExpectedInstance()
-        {
-            var a = new DateTime(2017, 12, 1, 13, 45, 00);
-            var b = new DateTime(2017, 12, 31, 09, 00, 00);
-            //
-            //  Times specified just for test. Expecting only the date information to be retained.
-
-            var range = TimeRange.FromDatesCovered(a, b, TimeSpan.Zero);
-
-            Assert.IsTrue(range.IsIncreasing);
-            Assert.AreEqual(1, range.Start.Day);
-            Assert.AreEqual(31, range.Stop.Day);
-        }
-
-        [TestMethod]
-        public void TimeRange_FromDatesCovered_ReturnsExpectedInstanceWhenDecreasing()
-        {
-            var a = new DateTime(2017, 12, 31, 09, 00, 00);
-            var b = new DateTime(2017, 12, 1, 13, 45, 00);
-            //
-            //  Times specified just for test. Expecting only the date information to be retained.
-
-            var range = TimeRange.FromDatesCovered(a, b, TimeSpan.Zero);
-
-            Assert.IsFalse(range.IsIncreasing);
-            Assert.AreEqual(31, range.Start.Day);
-            Assert.AreEqual(1, range.Stop.Day);
-        }
-
-        [TestMethod]
-        public void TimeRange_FromDatesCovered_ReturnsExpectedInstanceWithExclusiveStop()
-        {
-            var a = new DateTime(2017, 12, 1, 13, 45, 00);
-            var b = new DateTime(2018, 1, 1, 09, 00, 00);
-            //
-            //  Times specified just for test. Expecting only the date information to be retained.
-
-            var range = TimeRange.FromDatesCovered(a, b, TimeSpan.Zero, true);
-
-            Assert.AreEqual(1, range.Start.Day);
-            Assert.AreEqual(31, range.Stop.Day);
         }
 
         [TestMethod]

@@ -467,6 +467,14 @@
         }
 
         /// <summary>
+        /// Creates a new range covering the current hour and the next given.
+        /// </summary>
+        public static TimeRange Next(TimeSpan duration)
+        {
+            return new TimeRange(DateTimeOffset.Now, duration);
+        }
+        
+        /// <summary>
         /// Returns a new TimeRange covering a specified period to now.
         /// </summary>
         /// <param name="period">A TimeSpan representing the period leading up until now.</param>
