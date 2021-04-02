@@ -525,11 +525,21 @@
 
         public static bool operator ==(TimeRange a, TimeRange b)
         {
+            if (Object.ReferenceEquals(a, null))
+            {
+                return Object.ReferenceEquals(b, null);
+            }
+
             return a.Equals(b);
         }
 
         public static bool operator !=(TimeRange a, TimeRange b)
         {
+            if (Object.ReferenceEquals(a, null))
+            {
+                return !Object.ReferenceEquals(b, null);
+            }
+
             return !a.Equals(b);
         }
 

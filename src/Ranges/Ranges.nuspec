@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Evoq.Ranges</id>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     
     <title>Evoq Ranges</title>
     <summary>Contains classes such as Range of T and TimeRange.</summary>

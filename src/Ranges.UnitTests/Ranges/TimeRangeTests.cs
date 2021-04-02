@@ -54,6 +54,20 @@ namespace Evoq.Ranges.UnitTests
         }
 
         [TestMethod]
+        public void TimeRange_EqualityOperator_ComparesNull()
+        {
+            var r = new TimeRange(PointInTime1, PointInTime2);
+
+            Assert.IsFalse(r == null);
+            Assert.IsTrue(r != null);
+
+            TimeRange nll = null;
+
+            Assert.IsTrue(nll == null);
+            Assert.IsFalse(nll != null);
+        }
+
+        [TestMethod]
         public void TimeRange_FromDay_ReturnsValidRange()
         {
             var r = TimeRange.FromDay(PointInTime1);
